@@ -1,0 +1,25 @@
+{
+  "name": "konnekt-streams",
+  "version": "0.0.1",
+  "description": "A streaming library to help with the automated tasks process of konnekt",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keleko34/konnekt-streams.git"
+  },
+  "keywords": [
+    "streams",
+    "tasks",
+    "automation",
+    "konnekt"
+  ],
+  "author": "keleko34",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/keleko34/konnekt-streams/issues"
+  },
+  "homepage": "https://github.com/keleko34/konnekt-streams#readme"
+}

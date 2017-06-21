@@ -1,0 +1,1 @@
+module.exports = require('./konnekt-streams/konnekt-streams')();
