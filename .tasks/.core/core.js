@@ -9,7 +9,9 @@ module.exports = function(src)
       _isMultiFile = false,
       _isMultiDirectory = false,
       _directory = '',
-      _directoryRemainder = '';
+      _directoryRemainder = '',
+      _finished = [],
+      _onEnd = function(){};
   
   function parseDirectories(dir)
   {
@@ -43,6 +45,8 @@ module.exports = function(src)
   function source(src)
   {
     var __files = [];
+    
+    _finished = [];
     
     /* split the url to get the base file structure as well as get special '*' file and '**' directory cases  */
     _split = src.replace(new RegExp('('+process.cwd()+')|('+_root+')','g'),'')
@@ -101,7 +105,12 @@ module.exports = function(src)
     
     for(var x=0,len=_streams.length;x<len;x++)
     {
-        _streams[x].write(_root+dir);
+        _streams[x].write(_root+dir,function(stream){
+          stream.on('end',function(){
+            _finished.push(0);
+            if(_finished.length === _streams.length) _onEnd();
+          });
+        });
     }
     
     return source;
@@ -112,6 +121,12 @@ module.exports = function(src)
     return _streams.map(function(s){
       return s.stream();
     });
+  }
+  
+  source.onEnd = function(func)
+  {
+    if(typeof func === 'function') _onEnd = func;
+    return (func === undefined ? _onEnd : source);
   }
   
   return source(src);

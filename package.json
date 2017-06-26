@@ -4,7 +4,10 @@
   "description": "A streaming library to help with the automated tasks process of konnekt",
   "main": "init.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "default": "node init --task default",
+    "create": "node init --task create",
+    "build": "node init --task build",
+    "server": "node init --task server"
   },
   "repository": {
     "type": "git",
@@ -21,5 +24,12 @@
   "bugs": {
     "url": "https://github.com/keleko34/konnekt-streams/issues"
   },
-  "homepage": "https://github.com/keleko34/konnekt-streams#readme"
+  "homepage": "https://github.com/keleko34/konnekt-streams#readme",
+  "dependencies": {
+    "commander": "^2.10.0",
+    "connect": "^3.6.2",
+    "google-closure-compiler-js": "^20170521.0.0",
+    "inquirer": "^3.1.1",
+    "open": "0.0.5"
+  }
 }

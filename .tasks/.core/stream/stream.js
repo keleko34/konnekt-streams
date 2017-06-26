@@ -32,10 +32,11 @@ module.exports = function(file,directory)
     return stream;
   }
   
-  stream.write = function(dir)
+  stream.write = function(dir,cb)
   {
     mkdir(dir+_write,function(){
       _stream = _stream.pipe(write(dir+_write));
+      if(cb) cb(_stream);
     });
     return stream;
   }

@@ -7,9 +7,9 @@ module.exports = function()
   {
     var Transform = stream.Transform;
 
-    function inject(options)
+    function inject()
     {
-      Transform.call(this, options);
+      Transform.call(this, {});
     }
     util.inherits(inject, Transform);
 
@@ -25,7 +25,7 @@ module.exports = function()
       cb();
     }
 
-    return new inject({});
+    return inject;
   }
 
   Stream_Appender.append = function(str)
