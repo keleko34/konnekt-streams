@@ -1,7 +1,7 @@
 var fs = require('fs'),
     stream = require('./stream/stream');
 
-module.exports = function(src)
+module.exports = function(src,notFile)
 {
   var _streams = [],
       _root = process.cwd().replace(/\\/g,'/'),
@@ -38,12 +38,18 @@ module.exports = function(src)
   {
     for(var x=0,len=files.length;x<len;x++)
     {
-      _streams.push(stream(path+'/'+files[x],_directory));
+      _streams.push(stream(path+'/'+files[x],false,_directory));
     }
   }
   
   function source(src)
   {
+    if(notFile)
+    {
+      source.streamify(src);
+      return source;
+    }
+    
     var __files = [];
     
     _finished = [];
@@ -81,6 +87,12 @@ module.exports = function(src)
     return source;
   }
   
+  source.streamify = function(str)
+  {
+    _streams.push(stream(str,true));
+    return source;
+  }
+    
   source.pipe = function(pipe)
   {
     for(var x=0,len=_streams.length;x<len;x++)

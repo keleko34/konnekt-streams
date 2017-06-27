@@ -3,10 +3,6 @@ var fs = require('fs');
 module.exports = {
   commands:{
     Names:{
-      cmd:{
-        short:'-n',
-        long:'--name'
-      },
       prompt:{
         type:'checkbox',
         message:'What is the name of the component you would like to build?',

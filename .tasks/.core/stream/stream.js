@@ -2,21 +2,22 @@ var fs = require('fs'),
     path = require('path'),
     mkdir = require('./../mkdir/mkdir'),
     read = require('./../read/read'),
-    write = require('./../write/write');
+    write = require('./../write/write'),
+    streamify = require('./../streamify/streamify')
 
-module.exports = function(file,directory)
+module.exports = function(file,notFile,directory)
 {
   var _stream = {},
-      _parse = path.parse(file),
+      _parse = (!notFile ? path.parse(file) : {}),
       _root = process.cwd().replace(/\\/g,'/'),
       _file = _parse.base,
       _ext = _parse.ext,
-      _path = file.replace(new RegExp('('+process.cwd()+')|('+_root+')','g'),'').replace(directory,''),
+      _path = (!notFile ? file.replace(new RegExp('('+process.cwd()+')|('+_root+')','g'),'').replace(directory,'') : ''),
       _write = _path;
   
   function stream(file)
   {
-    _stream = read(file);
+    _stream = (!notFile ? read(file) : streamify(file));
     return stream;
   }
   
@@ -28,7 +29,7 @@ module.exports = function(file,directory)
   
   stream.rename = function(func)
   {
-    _write = func({file:_file,ext:_ext,path:_path,writeTo:_write});
+    _write = func({file:_file || '',ext:_ext || '',path:_path || '',writeTo:_write || ''});
     return stream;
   }
   

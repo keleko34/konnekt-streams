@@ -7,7 +7,49 @@ var base = require('./../../Base'),
     querystring = require('querystring');
 
 module.exports = function()
-{
+{  
+    function minify(dest,name)
+    {
+      var _stream = stream(dest+'/'+name+'.js');
+        
+      _stream.onEnd(function(){
+        console.log('\033[36mFinished Compiling \033[37m',name);
+      })
+      .pipe(compile())
+      .rename(function(fileNameObject){
+        return '/'+fileNameObject.file.replace('.js','.min.js');
+      })
+      .write(dest);
+    }
+  ,
+    function buildGroup(name,base,res)
+    {
+      var _groups,
+          _stream;
+      
+      fs.readFile(base+'/group.json'function(err,data){
+        if(!err)
+        {
+          JSON.parse(data).groups.forEach(function(component){
+            build(component,res);
+          });
+        }
+        else
+        {
+          if(err.code !== 'ENOENT')
+          {
+            console.error('There was an error getting the groups json file, groups were not compiled');
+            process.exit(0);
+          }
+          else
+          {
+            console.log('\033[36mFinished Compiling \033[37m',name);
+          }
+        }
+      });
+    }
+  
+  
     function build(name,res)
     {
       console.log('\033[36mCompiling:\033[37m',name,' \033[36mFor channel:\033[37m',res.Channel);
@@ -28,16 +70,7 @@ module.exports = function()
             endClosure = '\r\n\treturn '+name+';\r\n}());';
         
         _stream.onEnd(function(){
-          _stream = stream(_dest+'/'+name+'.js');
-        
-          _stream.onEnd(function(){
-            console.log('\033[36mFinished Compiling \033[37m',name);
-          })
-          .pipe(compile())
-          .rename(function(fileNameObject){
-            return '/'+fileNameObject.file.replace('.js','.min.js');
-          })
-          .write(_dest);
+          minify(_dest,name);
         })
         .pipe(append(appendFiles))
         .pipe(prepend(startClosure))
@@ -49,7 +82,6 @@ module.exports = function()
       }
       else if(res.BuildFrom === 'cms')
       {
-        
         var html = fs.readFileSync(_dir+"/"+name+".html",'utf8'),
             css = fs.readFileSync(_dir+"/"+name+".css",'utf8'),
             _stream = stream(_dir+'/'+name+'.js');
