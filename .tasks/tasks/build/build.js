@@ -4,94 +4,95 @@ var base = require('./../../Base'),
     prepend = require('./../../.core/transforms/append-prepend').prepend,
     compile = require('./../../.core/transforms/compile'),
     fs = require('fs'),
-    querystring = require('querystring');//,
-    //gulp = require('gulp'),
-    //rename = require('gulp-rename'),
-    //gap = require('gulp-append-prepend'),
-    //clean = require('gulp-clean'),
-    //closureCompiler = require('google-closure-compiler-js').gulp();
+    querystring = require('querystring');
 
 module.exports = function()
 {
-
-    function Command(res)
+    function build(name,res)
     {
-      
-      console.log('\033[36mCompiling:\033[37m',res.Name,' \033[36mFor channel:\033[37m',res.Channel);
-      var _base = global.gulp.config.Tasks.build.base,
-          _dest = _base+'/'+res.Name+(res.Channel !== 'cms' ? '/build/'+res.Channel : '/cms'),
-          _dir = global.gulp.base+_base+'/'+res.Name+(res.Channel === 'cms' ? '/cms' : (res.BuildFrom !== 'dev' ? '/build/'+res.BuildFrom : '')),
+      console.log('\033[36mCompiling:\033[37m',name,' \033[36mFor channel:\033[37m',res.Channel);
+      var _base = global.taskrunner.config.Tasks.build.base,
+          _dest = _base+'/'+name+(res.Channel !== 'cms' ? '/build/'+res.Channel : '/cms'),
+          _dir = global.taskrunner.base+_base+'/'+name+(res.Channel === 'cms' ? '/cms' : (res.BuildFrom !== 'dev' ? '/build/'+res.BuildFrom : '')),
           _devfiles = ['js'];
       
       if(res.BuildFrom === 'dev')
-      {
+      { 
+        var html = fs.readFileSync(_dir+"/"+name+".html",'utf8'),
+            css = fs.readFileSync(_dir+"/"+name+".css",'utf8'),
+            _stream = stream(_dir+'/'+name+'.js');
         
-        var html = fs.readFileSync(_dir+"/"+res.Name+".html",'utf8'),
-            css = fs.readFileSync(_dir+"/"+res.Name+".css",'utf8'),
-            _stream = stream(_dir+'/'+res.Name+'.js');
-        
-        var appendFiles = '\r\n'+res.Name+'.prototype.k_html = "'+html.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";'
-                        +'\r\n'+res.Name+'.prototype.k_css = "'+css.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";',
-            startClosure = 'if(!K_Components) K_Components = {};\r\nK_Components["'+res.Name+'"] = (function(){\r\n\t',
-            endClosure = '\r\n\treturn '+res.Name+';\r\n}());';
+        var appendFiles = '\r\n'+name+'.prototype.k_html = "'+html.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";'
+                        +'\r\n'+name+'.prototype.k_css = "'+css.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";',
+            startClosure = 'if(!K_Components) K_Components = {};\r\nK_Components["'+name+'"] = (function(){\r\n\t',
+            endClosure = '\r\n\treturn '+name+';\r\n}());';
         
         _stream.onEnd(function(){
-          console.log('\033[36mFinished Compiling \033[37m',res.Name);
+          _stream = stream(_dest+'/'+name+'.js');
+        
+          _stream.onEnd(function(){
+            console.log('\033[36mFinished Compiling \033[37m',name);
+          })
+          .pipe(compile())
+          .rename(function(fileNameObject){
+            return '/'+fileNameObject.file.replace('.js','.min.js');
+          })
+          .write(_dest);
         })
         .pipe(append(appendFiles))
         .pipe(prepend(startClosure))
         .pipe(append(endClosure))
-        .write(_dest)
-        .pipe(compile())
         .rename(function(fileNameObject){
-          return fileNameObject.writeTo.replace('.js','.min.js');
+          return '/'+fileNameObject.file;
         })
         .write(_dest);
       }
       else if(res.BuildFrom === 'cms')
       {
-        /*
-        var html = fs.readFileSync(_dir+"/"+res.Name+".html",'utf8'),
-            css = fs.readFileSync(_dir+"/"+res.Name+".css",'utf8');
-        gulp.src(_devfiles.map(function(file){
-          return _dir+"/"+res.Name+'.'+file;
-        }))
-        .pipe(gap.appendText('\r\n'+res.Name+'.prototype.kcms_html = "'+html.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";'
-                            +'\r\n'+res.Name+'.prototype.kcms_css = "'+css.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";'))
-        .pipe(gap.prependText('if(!KCMS_Components) KCMS_Components = {};\r\nKCMS_Components["'+res.Name+'"] = (function(){\r\n\t'))
-        .pipe(gap.appendText('\r\n\treturn '+res.Name+';\r\n}());'))
-        .pipe(rename({
-          basename: "temp",
-        }))
-        .pipe(gulp.dest(_dest))
-        .pipe(closureCompiler({
-          compilationLevel: 'SIMPLE',
-          jsOutputFile:res.Name+".min.js"
-        }))
-        .pipe(gulp.dest(_dest))
-        .on('end',function(){
-          gulp.src(_devfiles.map(function(file){
-            return _dir+'/temp.'+file;
-          }),{read:false})
-          .pipe(clean({force: true}));
-          console.log('\033[36mFinished Compiling \033[37m',res.Name);
+        
+        var html = fs.readFileSync(_dir+"/"+name+".html",'utf8'),
+            css = fs.readFileSync(_dir+"/"+name+".css",'utf8'),
+            _stream = stream(_dir+'/'+name+'.js');
+        
+        var appendFiles = '\r\n'+name+'.prototype.kcms_html = "'+html.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";'
+                        +'\r\n'+name+'.prototype.kcms_css = "'+css.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";',
+            startClosure = 'if(!KCMS_Components) KCMS_Components = {};\r\nKCMS_Components["'+name+'"] = (function(){\r\n\t',
+            endClosure = '\r\n\treturn '+name+';\r\n}());';
+        
+        _stream.onEnd(function(){
+          console.log('\033[36mFinished Compiling \033[37m',name);
         })
-        */
+        .pipe(append(appendFiles))
+        .pipe(prepend(startClosure))
+        .pipe(append(endClosure))
+        .pipe(compile())
+        .rename(function(fileNameObject){
+          return '/'+fileNameObject.file.replace('.js','.min.js');
+        })
+        .write(_dest);
       }
       else
       {
-        /*
-        _devfiles = (res.Channel !== 'prod' ? ['js','min.js'] : ['min.js']);
-        gulp.src(_devfiles.map(function(file){
-          return _dir+"/"+res.Name+'.'+file;
-        }))
-        .pipe(gulp.dest(_dest))
-        .on('end',function(){
-          console.log('\033[36mFinished Compiling \033[37m',res.Name);
-        });
+        var _stream = stream(_dir+"/"+(res.Channel !== 'prod' ? '*' : name+'.min.js'));
+        
+        _stream.onEnd(function(){
+          console.log('\033[36mFinished Compiling \033[37m',name);
+        })
+        .rename(function(fileNameObject){
+          return '/'+fileNameObject.file;
+        })
+        .write(_dest);
       }
-      */
     }
+  
+    function Command(res)
+    {
+      if(res.Names.length === 0) return console.error('No component names were selected, please use `space` to select a component to build');
+      
+      for(var x=0,len=res.Names.length;x<len;x++)
+      {
+        build(res.Names[x],res);
+      }
     }
 
     return base

@@ -1,6 +1,6 @@
 var stream = require('stream'),
     util = require('util'),
-    compile = require('google-closure-compiler-js').compile;
+    compiler = require('google-closure-compiler-js').compile;
 
 module.exports = function(options,stream_options)
 {
@@ -27,9 +27,8 @@ module.exports = function(options,stream_options)
   
   compile.prototype._flush = function(cb)
   {
-    options.jsCode = [{src: _data}];
-    _data = compile(options);
-    this.push(_data.compiledCode);
+    options.jsCode = [{src:_data}];
+    this.push(compiler(options).compiledCode);
     cb();
   }
   

@@ -1,8 +1,6 @@
 var stream = require('stream'),
     util = require('util');
 
-module.exports = function()
-{  
   function Stream_Appender(prepend,append)
   {
     var Transform = stream.Transform;
@@ -62,6 +60,5 @@ module.exports = function()
       return ap;
     });
   }
-
-  return Stream_Appender;
-}
+ 
+ module.exports = Stream_Appender;

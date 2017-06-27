@@ -38,7 +38,7 @@ module.exports = (function(){
       }
 
       /* if type is list set choices option for prompt */
-      if(options.prompt.type === 'list'){
+      if(options.prompt.type === 'list' || options.prompt.type === 'checkbox'){
         _prompts[commandName].choices = (typeof options.prompt.choices === 'function' ? options.prompt.choices(_values) : options.prompt.choices);
       }
       /* Run prompt command */

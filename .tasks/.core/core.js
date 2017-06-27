@@ -106,7 +106,7 @@ module.exports = function(src)
     for(var x=0,len=_streams.length;x<len;x++)
     {
         _streams[x].write(_root+dir,function(stream){
-          stream.on('end',function(){
+          stream.on('finish',function(){
             _finished.push(0);
             if(_finished.length === _streams.length) _onEnd();
           });

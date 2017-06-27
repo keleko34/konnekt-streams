@@ -13,5 +13,9 @@ global.taskrunner.tasks = fs.readdirSync(global.taskrunner.global+"/tasks").redu
   return Obj;
 },{});
 
+process.on('unhandledRejection', function (err) {
+  console.log('unhandledRejection',err.message,err.stack);
+})
+
 /* run default task */
 global.taskrunner.tasks.default();
