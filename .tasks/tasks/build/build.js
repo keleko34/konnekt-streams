@@ -8,54 +8,60 @@ var base = require('./../../Base'),
 
 module.exports = function()
 {  
-    function minify(dest,name)
+    function minify(component,fileRead,pathWrite,response,hasBuildGroup)
     {
-      var _stream = stream(dest+'/'+name+'.js');
-        
+      var _stream = stream(fileRead);
+      
       _stream.onEnd(function(){
-        console.log('\033[36mFinished Compiling \033[37m',name);
+        if(hasBuildGroup) 
+        {
+          buildGroup(component,pathWrite,response);
+          return;
+        }
+        console.log('\033[36mFinished '+(fileRead.indexOf('.group') !== -1 ? 'Compiling Group' : 'Compiling')+' \033[37m',component);
       })
       .pipe(compile())
       .rename(function(fileNameObject){
         return '/'+fileNameObject.file.replace('.js','.min.js');
       })
-      .write(dest);
+      .write(pathWrite);
     }
-  ,
+  
     function buildGroup(name,base,res)
     {
-      console.log(name,base,res);
       /* create a stream from the build file */
       var _groups,
           _finished = 0,
-          _stream = stream(read());
+          _groupFile = global.taskrunner.base+base.replace('/build/'+res.Channel,'')+'/group.json',
+          _stream = stream(base+'/'+name+'.js');
       
       /* read the groups file if it exists */
-      fs.readFile(base+'/group.json'function(err,data){
+      fs.readFile(_groupFile,function(err,data){
         if(!err)
         {
+          console.log('\033[36mBuilding And Compiling Group \033[37m',name);
           /* loop build each component and then append its contents to  */
           data = JSON.parse(data);
           _groups = data.groups;
-          
+
           for(var x=0,len=_groups.length;x<len;x++)
           {
-            build(component,res,function(path){
-              _stream.pipe(append(fs.readFileSync(path)));
+            build(_groups[x],res,function(n,path){
+              _stream.pipe(append('\r\n'+fs.readFileSync(global.taskrunner.base+path+'/'+n+'.js')));
               _finished += 1;
               
               if(_finished === _groups.length)
               {
                 _stream.onEnd(function(){
-                  console.log('\033[36mFinished Compiling \033[37m',name);
+                  minify(name,base+'/'+name+'.group.js',base);
                 })
                 .rename(function(fileNameObject){
-                  
+                  return (fileNameObject.writeTo.replace('.js','.group.js'));
                 })
-                .write();
+                .write('');
               }
               
-            });
+            },true);
           }
         }
         else
@@ -74,9 +80,9 @@ module.exports = function()
     }
   
   
-    function build(name,res)
+    function build(name,res,cb,bg)
     {
-      console.log('\033[36mCompiling:\033[37m',name,' \033[36mFor channel:\033[37m',res.Channel);
+      console.log('\033[36mCompiling'+(bg ? ' Group Sub Component' : '')+':\033[37m',name,' \033[36mFor channel:\033[37m',res.Channel);
       var _base = global.taskrunner.config.Tasks.build.base,
           _dest = _base+'/'+name+(res.Channel !== 'cms' ? '/build/'+res.Channel : '/cms'),
           _dir = global.taskrunner.base+_base+'/'+name+(res.Channel === 'cms' ? '/cms' : (res.BuildFrom !== 'dev' ? '/build/'+res.BuildFrom : '')),
@@ -94,7 +100,8 @@ module.exports = function()
             endClosure = '\r\n\treturn '+name+';\r\n}());';
         
         _stream.onEnd(function(){
-          minify(_dest,name);
+          if(cb) cb(name,_dest);
+          minify(name,_dest+'/'+name+'.js',_dest,res,!bg);
         })
         .pipe(append(appendFiles))
         .pipe(prepend(startClosure))
