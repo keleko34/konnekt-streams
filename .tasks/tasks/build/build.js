@@ -24,15 +24,39 @@ module.exports = function()
   ,
     function buildGroup(name,base,res)
     {
+      console.log(name,base,res);
+      /* create a stream from the build file */
       var _groups,
-          _stream;
+          _finished = 0,
+          _stream = stream(read());
       
+      /* read the groups file if it exists */
       fs.readFile(base+'/group.json'function(err,data){
         if(!err)
         {
-          JSON.parse(data).groups.forEach(function(component){
-            build(component,res);
-          });
+          /* loop build each component and then append its contents to  */
+          data = JSON.parse(data);
+          _groups = data.groups;
+          
+          for(var x=0,len=_groups.length;x<len;x++)
+          {
+            build(component,res,function(path){
+              _stream.pipe(append(fs.readFileSync(path)));
+              _finished += 1;
+              
+              if(_finished === _groups.length)
+              {
+                _stream.onEnd(function(){
+                  console.log('\033[36mFinished Compiling \033[37m',name);
+                })
+                .rename(function(fileNameObject){
+                  
+                })
+                .write();
+              }
+              
+            });
+          }
         }
         else
         {
@@ -108,7 +132,7 @@ module.exports = function()
         var _stream = stream(_dir+"/"+(res.Channel !== 'prod' ? '*' : name+'.min.js'));
         
         _stream.onEnd(function(){
-          console.log('\033[36mFinished Compiling \033[37m',name);
+          buildGroup(name,_dest,res);
         })
         .rename(function(fileNameObject){
           return '/'+fileNameObject.file;
