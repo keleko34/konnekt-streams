@@ -8,14 +8,26 @@ module.exports = function()
     {
         var _base = global.taskrunner.config.Tasks.build.base+'/'+res.Name,
             _autoText = "Autogroup (Note this reads the html, any dynamic components won't be grouped)",
-            _isAuto = (res.Grouped.indexOf(_autoText) !== -1);
+            _isAuto = (res.Grouped.indexOf(_autoText) !== -1),
+            _list = [];
         
         if(_isAuto)
         {
             /* fetch and read all html files */
             var _components = fs.readdirSync(global.taskrunner.config.Tasks.build.base),
-                _html = fs.readFileSync(_base+'/'+res.Name+'.html');
+                _html = fs.readFileSync(_base+'/'+res.Name+'.html')
+                .match(/(<\/.*?>)/g)
+                .map(function(v){
+                  return v.replace(/[<\/>]/g,"");
+                });
             
+          for(var x=0,len=_html.length;x<len;x++)
+          {
+             if(_components.indexOf(_html[x]) !== -1)
+             {
+               
+             }
+          }
         }
         else
         {
