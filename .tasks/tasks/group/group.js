@@ -1,4 +1,5 @@
 var base = require('./../../Base'),
+    fs = require('fs'),
     stream = require('./../../.core/core');
 
 module.exports = function()
@@ -12,6 +13,9 @@ module.exports = function()
         if(_isAuto)
         {
             /* fetch and read all html files */
+            var _components = fs.readdirSync(global.taskrunner.config.Tasks.build.base),
+                _html = fs.readFileSync(_base+'/'+res.Name+'.html');
+            
         }
         else
         {

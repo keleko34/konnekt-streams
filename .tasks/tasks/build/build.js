@@ -26,57 +26,60 @@ module.exports = function()
       })
       .write(pathWrite);
     }
+    
+    function getGroups(name,path)
+    {
+      var _groups;
+      
+      try{
+        _groups = JSON.parse(fs.readFileSync(global.taskrunner.base+path+'/group.json')).groups;
+      }
+      catch(e)
+      {
+        if(e.code !== 'ENOENT')
+        {
+          console.error('There was an error getting the groups json file, groups were not compiled for ',name);
+          process.exit(0);
+        }
+      }
+      
+      return _groups;
+    }
   
     function buildGroup(name,base,res)
     {
       /* create a stream from the build file */
-      var _groups,
+      var _groups = getGroups(name,base.replace('/build/'+res.Channel,'')),
           _finished = 0,
-          _groupFile = global.taskrunner.base+base.replace('/build/'+res.Channel,'')+'/group.json',
           _stream = stream(base+'/'+name+'.js');
       
-      /* read the groups file if it exists */
-      fs.readFile(_groupFile,function(err,data){
-        if(!err)
+      if(_groups)
+      {
+        console.log('\033[36mBuilding And Compiling Group \033[37m',name);
+        for(var x=0,len=_groups.length;x<len;x++)
         {
-          console.log('\033[36mBuilding And Compiling Group \033[37m',name);
-          /* loop build each component and then append its contents to  */
-          data = JSON.parse(data);
-          _groups = data.groups;
+          build(_groups[x],res,function(n,path){
+            _stream.pipe(append('\r\n'+fs.readFileSync(global.taskrunner.base+path+'/'+n+'.js')));
+            _finished += 1;
 
-          for(var x=0,len=_groups.length;x<len;x++)
-          {
-            build(_groups[x],res,function(n,path){
-              _stream.pipe(append('\r\n'+fs.readFileSync(global.taskrunner.base+path+'/'+n+'.js')));
-              _finished += 1;
-              
-              if(_finished === _groups.length)
-              {
-                _stream.onEnd(function(){
-                  minify(name,base+'/'+name+'.group.js',base);
-                })
-                .rename(function(fileNameObject){
-                  return (fileNameObject.writeTo.replace('.js','.group.js'));
-                })
-                .write('');
-              }
-              
-            },true);
-          }
+            if(_finished === _groups.length)
+            {
+              _stream.onEnd(function(){
+                minify(name,base+'/'+name+'.group.js',base);
+              })
+              .rename(function(fileNameObject){
+                return (fileNameObject.writeTo.replace('.js','.group.js'));
+              })
+              .write('');
+            }
+
+          },true);
         }
-        else
-        {
-          if(err.code !== 'ENOENT')
-          {
-            console.error('There was an error getting the groups json file, groups were not compiled');
-            process.exit(0);
-          }
-          else
-          {
-            console.log('\033[36mFinished Compiling \033[37m',name);
-          }
-        }
-      });
+      }
+      else
+      {
+        console.log('\033[36mFinished Compiling \033[37m',name);
+      }
     }
   
   
