@@ -22,32 +22,20 @@ module.exports = {
                   return choices;
                 }
             },
-            action:function(v,values){
-                try{
-                    if(fs.readFileSync(global.taskrunner.base+"/components/"+values.Name+'/group.json'))
-                    {
-                        return 'Confirm';
-                    }
-                    else
-                    {
-                        return 'Grouped';
-                    }
-                }
-                catch(e)
-                {
-                    return 'Grouped';
-                }
-            }
+            action:'Auto'
         },
-        Confirm:{
-            prompt:{
-                type:'confirm',
-                message:'A group for this component already exists, are you sure you want to overwrite it?'
-            },
-            action:function(v,values){
-                if(v) return 'Grouped';
-                return 'Name';
-            }
+        Auto:{
+          cmd:{
+            short:'-a',
+            long:'--auto'
+          },
+          prompt:{
+            type:'confirm',
+            message:"Would You like to autogroup this component? (Note this reads the html, any dynamic components won't be grouped)"
+          },
+          action:function(v,values){
+            return (v ? 'end' : 'Grouped');
+          }
         },
         Grouped:{
             prompt:{
