@@ -1,7 +1,9 @@
 var base = require('./../../base'),
     http = require('http'),
     connect = require('connect')(),
-    open = require('open');
+    static = require('serve-static'),
+    open = require('open'),
+    basedir = process.cwd().replace(/\\/g,'/');
 
 module.exports = function()
 {
@@ -13,6 +15,8 @@ module.exports = function()
     {
       connect.use(global.taskrunner.config.Tasks.server.routes[x]);
     }
+    
+    connect.use('/',static('.', {'index': ['index.html', 'index.htm']}));
     
     connect.listen((res.Port && res.Port.length !== 0 ? parseInt(res.Port) : 8080));
     
