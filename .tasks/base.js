@@ -161,7 +161,7 @@ module.exports = (function(){
     
     for(var x=0,len=process.argv.length;x<len;x++)
     {
-      if(process.argv[x].match(/(--){2}/g))
+      if(process.argv[x].match(/(--)/g))
       {
         if(currentLongOptions.indexOf(process.argv[x]) === -1)
         {
