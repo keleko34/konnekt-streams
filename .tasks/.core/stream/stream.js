@@ -27,6 +27,12 @@ module.exports = function(file,notFile,directory)
     return stream;
   }
   
+  stream.res = function(res)
+  {
+    _stream.pipe(res);
+    return stream;
+  }
+  
   stream.rename = function(func)
   {
     _write = func({file:_file || '',ext:_ext || '',path:_path || '',writeTo:_write || ''});

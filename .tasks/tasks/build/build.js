@@ -99,7 +99,7 @@ module.exports = function()
         
         var appendFiles = '\r\n'+name+'.prototype.k_html = "'+html.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";'
                         +'\r\n'+name+'.prototype.k_css = "'+css.replace(/[\r\n]/g,'').replace(/[\"]/g,"'")+'";',
-            startClosure = 'if(!K_Components) K_Components = {};\r\nK_Components["'+name+'"] = (function(){\r\n\t',
+            startClosure = 'if(typeof window.K_Components === \'undefined\') window.K_Components = {};\r\nK_Components["'+name+'"] = (function(){\r\n\t',
             endClosure = '\r\n\treturn '+name+';\r\n}());';
         
         _stream.onEnd(function(){

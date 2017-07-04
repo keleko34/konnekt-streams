@@ -102,6 +102,15 @@ module.exports = function(src,notFile)
     return source;
   }
   
+  source.res = function(res)
+  {
+    for(var x=0,len=_streams.length;x<len;x++)
+    {
+        _streams[x].res(res);
+    }
+    return source;
+  }
+  
   source.rename = function(func)
   {
     for(var x=0,len=_streams.length;x<len;x++)

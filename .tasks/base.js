@@ -154,6 +154,31 @@ module.exports = (function(){
       }
     });
     
+    var currentLongOptions = cli.options.reduce(function(arr,opt){
+      arr.push(opt.long);
+      return arr;
+    },[]);
+    
+    for(var x=0,len=process.argv.length;x<len;x++)
+    {
+      if(process.argv[x].match(/(--){2}/g))
+      {
+        if(currentLongOptions.indexOf(process.argv[x]) === -1)
+        {
+          var name = process.argv[x],
+              options = {
+                cmd:{
+                  long:name,
+                  short:name.substring(0,3).replace('--','-'),
+                  help:'To be added'
+                },
+                prompt:{}
+              };
+          cli = cli.option.apply(cli,_parseCli(options).concat(setCliValue(name,options)));
+        }
+      }
+    }
+    
     /* add helper for options method after reading all cli commands */
     cli.option('-o, --options','Displays helper for options',cli.help.bind(cli)).parse(process.argv);
     /* run first command in the list */

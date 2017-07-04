@@ -195,7 +195,7 @@ module.exports = function(req,res,next){
     {
       if(_env === 'dev')
       {
-        stream.pipe(prepend('K_Components["'+_name+'"] = ')).pipe(res);
+        stream.pipe(prepend('if(typeof K_Components === \'undefined\') K_Components = {};\r\nK_Components["'+_name+'"] = ')).pipe(res);
       }
       else
       {
