@@ -34,10 +34,10 @@ module.exports = function()
       _streamConfig.pipe(replace(new RegExp('(\\$helpers)','g'),''));
     }
     
-    process.argv = process.argv.concat(['--name',res.Title,'--description',res.Description,'--author','<insert name>']);
+    process.argv = process.argv.concat(['--name',res.Title.toLowerCase().replace(/\s/g,'_'),'--description',res.Description,'--author','<insert name>']);
     global.taskrunner.tasks.create(function(){
       stream(global.taskrunner.base+'/components/'+res.Title.toLowerCase().replace(/\s/g,'_')+'/'+res.Title.toLowerCase().replace(/\s/g,'_')+'.html')
-      .pipe(append('<h1>'+res.Title+'</h1>'))
+      .pipe(append('\r\n<h1>'+res.Title+'</h1>'))
       .write('/');
     });
     
