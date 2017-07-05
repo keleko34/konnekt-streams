@@ -1,6 +1,6 @@
 {
   "name": "konnekt-streams",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A streaming library to help with the automated tasks process of konnekt",
   "main": "init.js",
   "repository": {
