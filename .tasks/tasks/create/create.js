@@ -2,11 +2,11 @@ var base = require('./../../base'),
     stream = require('./../../.core/core'),
     replace = require('./../../.core/transforms/replace');
 
-module.exports = function()
+module.exports = function(cb)
 {
   function Command(res)
   {
-    console.log('\033[36mStarting to Create module:\033[37m',res.Name);
+    console.log('\033[36mStarting to Create Component:\033[37m',res.Name);
     
     var _streams = stream(global.taskrunner.global+"/tasks/create/template/**/*"),
         _config = global.taskrunner.config.Tasks.create,
@@ -19,6 +19,7 @@ module.exports = function()
     
     _streams.onEnd(function(){
       if(typeof _config.onFinished === 'function') _config.onFinished(res);
+      if(cb) cb();
     })
     .rename(function(fileNameObject){
       var writeTo = fileNameObject.writeTo;

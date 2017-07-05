@@ -37,6 +37,6 @@ module.exports = {
     }
   },
   onFinished:function(res){
-    console.log('\033[36mFinished Creating:\033[37m',res.Name);
+    console.log('\033[36mFinished Creating Component:\033[37m',res.Name);
   }
 }

@@ -1,6 +1,7 @@
 var base = require('./../../base'),
     stream = require('./../../.core/core'),
-    replace = require('./../../.core/transforms/replace');
+    replace = require('./../../.core/transforms/replace'),
+    append = require('./../../.core/transforms/append-prepend').append;
 
 module.exports = function()
 {
@@ -33,8 +34,12 @@ module.exports = function()
       _streamConfig.pipe(replace(new RegExp('(\\$helpers)','g'),''));
     }
     
-    process.argv = process.argv.concat(['--name',res.Title,'--description',res.Description,'--author','self']);
-    global.taskrunner.tasks.create();
+    process.argv = process.argv.concat(['--name',res.Title,'--description',res.Description,'--author','<insert name>']);
+    global.taskrunner.tasks.create(function(){
+      stream(global.taskrunner.base+'/components/'+res.Title+'/'+res.Title+'.html')
+      .pipe(append('<h1>'+res.Title+'</h1>'))
+      .write('/');
+    });
     
     _streamIndex.onEnd(function(){
       _streamIndexFinished = 1;

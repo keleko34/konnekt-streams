@@ -28,7 +28,7 @@ module.exports = function()
     {
         if(key === '\u000f')
         {
-            open('http://localhost:'+res.Port);
+            open('http://localhost:'+res.Port+'/?env=dev');
         }
         else
         {
