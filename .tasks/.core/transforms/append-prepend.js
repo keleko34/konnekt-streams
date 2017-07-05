@@ -1,13 +1,17 @@
 var stream = require('stream'),
     util = require('util');
 
-  function Stream_Appender(prepend,append)
+  function Stream_Appender(prepend,append,stream_options)
   {
     var Transform = stream.Transform;
 
     function inject()
     {
-      Transform.call(this, {});
+      stream_options = (stream_options ? stream_options : {});
+      stream_options.encoding = (stream_options.encoding || 'utf8');
+      stream_options.highWaterMark = (stream_options.highWaterMark || 1024);
+      
+      Transform.call(this, stream_options);
     }
     util.inherits(inject, Transform);
 
@@ -26,14 +30,14 @@ var stream = require('stream'),
     return inject;
   }
 
-  Stream_Appender.append = function(str)
+  Stream_Appender.append = function(str,options)
   {
     return Stream_Appender(null,function(){
       return str;
-    });
+    },options);
   }
 
-  Stream_Appender.prepend = function(str,alter)
+  Stream_Appender.prepend = function(str,alter,options)
   {
     var start = false;
     return Stream_Appender(function(chunk){
@@ -43,10 +47,10 @@ var stream = require('stream'),
         start = true;
       }
       return chunk;
-    });
+    },null,options);
   }
 
-  Stream_Appender.preappend = function(pre,ap,alter)
+  Stream_Appender.preappend = function(pre,ap,alter,options)
   {
     var start = false;
     return Stream_Appender(function(chunk){
@@ -58,7 +62,7 @@ var stream = require('stream'),
       return chunk;
     },function(){
       return ap;
-    });
+    },options);
   }
  
  module.exports = Stream_Appender;

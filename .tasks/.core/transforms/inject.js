@@ -12,7 +12,7 @@ function content_injector(searchFor,beforeAfter,content,stream_options)
   {
     stream_options = (stream_options ? stream_options : {});
     stream_options.encoding = (stream_options.encoding || 'utf8');
-    stream_options.highWaterMark = (stream_options.highWaterMark || 10);
+    stream_options.highWaterMark = (stream_options.highWaterMark || 1024);
 
     Transform.call(this, stream_options);
   }

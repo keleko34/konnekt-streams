@@ -6,7 +6,7 @@ module.exports = function(file,opt)
   function read(file,options)
   {
     if(!options) options = {};
-    options.highWaterMark = (options.highWaterMark || 10);
+    options.highWaterMark = (options.highWaterMark || 1024);
     options.mode = (options.mode || (parseInt('0777', 8) & (~process.umask())));
     options.flag = (options.flag || 'r');
     options.encoding = (options.encoding || 'utf8');

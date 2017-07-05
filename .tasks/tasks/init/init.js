@@ -36,9 +36,11 @@ module.exports = function()
     
     process.argv = process.argv.concat(['--name',res.Title.toLowerCase().replace(/\s/g,'_'),'--description',res.Description,'--author','<insert name>']);
     global.taskrunner.tasks.create(function(){
-      stream(global.taskrunner.base+'/components/'+res.Title.toLowerCase().replace(/\s/g,'_')+'/'+res.Title.toLowerCase().replace(/\s/g,'_')+'.html')
-      .pipe(append('\r\n<h1>'+res.Title+'</h1>'))
-      .write('/');
+      setTimeout(function(){
+        stream(global.taskrunner.base+'/components/'+res.Title.toLowerCase().replace(/\s/g,'_')+'/'+res.Title.toLowerCase().replace(/\s/g,'_')+'.html')
+        .pipe(append('\r\n<h1>'+res.Title+'</h1>'))
+        .write('/');
+      },100);
     });
     
     _streamIndex.onEnd(function(){

@@ -7,7 +7,7 @@ module.exports = function(lookFor,replacement,options)
   {
     if(!options) options = {};
     options.encoding = (options.encoding || 'utf8');
-    options.highWaterMark = (options.highWaterMark || 10);
+    options.highWaterMark = (options.highWaterMark || 1024);
     
     this.id = options.id || '';
     this.lookFor = typeof lookFor === 'string' ? (new RegExp('('+lookFor+')','g')) : lookFor;
