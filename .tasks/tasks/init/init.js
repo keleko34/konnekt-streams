@@ -26,6 +26,12 @@ module.exports = function()
       
       _streamConfig.pipe(replace(new RegExp('(\\$helpers)','g'),'\/* The prefix used for local routing for the base directory, .\/ means base dir where index.html is located.\n   , prefix: \'.\/\' *\/'));
     }
+    else
+    {
+      _streamIndex.pipe(replace(new RegExp('(\\$helpers)','g'),''));
+      
+      _streamConfig.pipe(replace(new RegExp('(\\$helpers)','g'),''));
+    }
     
     _streamIndex.onEnd(function(){
       _streamIndexFinished = 1;
