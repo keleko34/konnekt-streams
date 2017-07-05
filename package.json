@@ -3,12 +3,6 @@
   "version": "0.2.0",
   "description": "A streaming library to help with the automated tasks process of konnekt",
   "main": "init.js",
-  "scripts": {
-    "default": "node init --task default",
-    "create": "node init --task create",
-    "build": "node init --task build",
-    "server": "node init --task server"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/keleko34/konnekt-streams.git"

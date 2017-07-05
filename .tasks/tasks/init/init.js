@@ -2,6 +2,7 @@ var base = require('./../../base'),
     fs = require('fs'),
     stream = require('./../../.core/core'),
     replace = require('./../../.core/transforms/replace'),
+    inject = require('./../../.core/transforms/inject'),
     append = require('./../../.core/transforms/append-prepend').append,
     latest_konnekt_version = '0.8.6';
 
@@ -14,7 +15,6 @@ module.exports = function()
     var _streamIndex = stream(global.taskrunner.global+"/tasks/init/template/index/*"),
         _streamConfig = stream(global.taskrunner.global+"/tasks/init/template/config/**/*"),
         _streamInit = stream("require('konnekt');\n",true),
-        _streamPackage = stream('{\n  \"name\": \"'+res.Title.toLowerCase().replace(/\s/g,'_')+'\",\n  \"version\": \"0.8.6\",\n  \"description\": \"'+res.Description+'\",\n  \"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },\n  \"dependencies\":{\n    \"konnekt\":\"^'+latest_konnekt_version+'\"\n  }\n}',true),
         _finished = 0,
         _config = global.taskrunner.config.Tasks.init;
     
@@ -67,14 +67,44 @@ module.exports = function()
     })
     .write('');
     
-    _streamPackage.rename(function(fileNameObject){
-      return '/package.json';
-    })
-    .onEnd(function(){
-      _finished += 1;
-      if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
-    })
-    .write('');
+    if(!fs.existsSync(global.taskrunner.base+'/package.json'))
+    {
+      var _streamPackage = stream('{\n  \"name\": \"'+res.Title.toLowerCase().replace(/\s/g,'_')+'\",\n  \"version\": \"0.8.6\",\n  \"description\": \"'+res.Description+'\",\n  \"main\": \"init.js\",\n  \"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },\n  \"dependencies\":{\n    \"konnekt\":\"^'+latest_konnekt_version+'\"\n  }\n}',true);
+      
+        _streamPackage.rename(function(fileNameObject){
+          return '/package.json';
+        })
+        .onEnd(function(){
+          _finished += 1;
+          if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
+        })
+        .write('');
+    }
+    else
+    {
+      var _streamPackage = stream(global.taskrunner.base+'/package.json');
+      
+      var scriptReplace = replace(/("scripts": {)([\s\S]*?)(},)/g,'\"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },')
+      .onNotFound(function(searchFor){
+        _streamPackage.pipe(inject('"dependencies"','before','\"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },\n  '))
+        .onEnd(function(){
+          _finished += 1;
+          if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
+        })
+        .write('');
+      })
+      .onFound(function(searchFor,match){
+        _streamPackage.onEnd(function(){
+          _finished += 1;
+          if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
+        })
+        .write('');
+      });
+      
+      _streamPackage.pipe(replace(/("name":)([\s\S]*?)(,)/g,'\"name\": \"'+res.Title.toLowerCase().replace(/\s/g,'_')+'",'))
+      .pipe(replace(/("description":)([\s\S]*?)(,)/g,'\"description\": \"'+res.Description+'",'))
+      .pipe(scriptReplace);
+    }
   }
   
   return base

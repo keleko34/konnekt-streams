@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 module.exports = {
+  firstCommand:'Names',
   commands:{
     Names:{
       prompt:{

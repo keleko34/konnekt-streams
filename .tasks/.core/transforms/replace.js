@@ -1,8 +1,12 @@
 var stream = require('stream'),
     util = require('util');
 
-module.exports = function(lookFor,replacement,options)
+function replaceEx(lookFor,replacement,options)
 {
+  var _found = 0,
+      _onNotFound = function(){},
+      _onFound = function(){};
+  
   function replace()
   {
     if(!options) options = {};
@@ -40,11 +44,36 @@ module.exports = function(lookFor,replacement,options)
       }
     }
     
+    if(chunk.match(this.lookFor))
+    {
+      if(!_found) _onFound(lookFor,(chunk.match(this.lookFor)));
+      _found = 1;
+    }
     this.push(chunk.replace(this.lookFor,this.replacement));
+    cb();
+  }
+  
+  replace.prototype._flush = function(cb)
+  {
+    if(!_found) _onNotFound(lookFor);
     cb();
   }
   
   util.inherits(replace, stream.Transform);
   
+  replace.onNotFound = function(func)
+  {
+    _onNotFound = func;
+    return replace;
+  }
+  
+  replace.onFound = function(func)
+  {
+    _onFound = func;
+    return replace;
+  }
+  
   return replace;
 }
+
+module.exports = replaceEx;

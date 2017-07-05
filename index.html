@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello world</title>
+    <meta name="description" content="yay">
+    <script type="text/javascript" src="node_modules/konnekt/Konnekt/Min/Konnekt.min.js"></script>
+    <script type="text/javascript">
+       Konnekt().hashRouting(true);
+        
+    /*  turns on local front end based routing so a backend nodejs component routing lib is not needed
+        .localRouting(true)*/
+      
+    /*  allows overwriting the default hashrouter
+        .addHashRouter(function(e){
+            e.hash = Konnekt.config().base;
+        })*/
+    </script>
+  </head>
+  <body></body>
+</html>

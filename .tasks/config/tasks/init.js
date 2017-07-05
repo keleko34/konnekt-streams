@@ -1,5 +1,7 @@
 module.exports = {
-  firstCommand:'Title',
+  firstCommand:function(){
+    return (process.argv.indexOf('--postinstall') !== -1 ? 'Initial' : 'Title');
+  },
   commands:{
     Initial:{
       cmd:{

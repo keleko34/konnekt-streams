@@ -6,6 +6,9 @@ function content_injector(searchFor,beforeAfter,content,stream_options)
 {
   var _data = "",
       _injected = false,
+      _found = 0,
+      _onFound = function(){},
+      _onNotFound = function(){},
       Transform = stream.Transform;
 
   function inject()
@@ -28,6 +31,8 @@ function content_injector(searchFor,beforeAfter,content,stream_options)
       {
         if(searchFor(_data) === true)
         {
+          if(!_found) _onFound(searchFor);
+          _found = 1;
           this.push(_data);
           _injected = true;
         }
@@ -37,6 +42,8 @@ function content_injector(searchFor,beforeAfter,content,stream_options)
         var match = _data.match(searchFor);
         if(match)
         {
+          if(!_found) _onFound(searchFor);
+          _found = 1;
           var str = (beforeAfter === 'before' ? content+match[0] : match[0]+content);
           _data = _data.replace(searchFor,str);
           this.push(_data);
@@ -54,6 +61,7 @@ function content_injector(searchFor,beforeAfter,content,stream_options)
   inject.prototype._flush = function(cb)
   {
     if(!_injected) this.push(_data);
+    if(!_found) _onNotFound(searchFor);
     cb();
   }
   
@@ -72,6 +80,18 @@ content_injector.string = function(searchFor,beforeAfter,content)
   if(typeof searchFor === 'string') searchFor = (new RegExp("("+searchFor.replace(/[^\w\s\r\n\t]/g,'\\$&')+")",g));
   
   return content_injector(searchFor,beforeAfter,content);
+}
+
+content_injector.onNotFound = function(func)
+{
+  _onNotFound = func;
+  return content_injector;
+}
+
+content_injector.onFound = function(func)
+{
+  _onFound = func;
+  return content_injector;
 }
 
 module.exports = content_injector;

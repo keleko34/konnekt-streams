@@ -144,6 +144,18 @@ module.exports = (function(){
     
     _taskCommandKeys = Object.keys(_taskCommands);
     _currentTaskCommand = _taskCommandKeys[0];
+    
+    if(global.taskrunner.config.Tasks[_task].firstCommand)
+    {
+      if(typeof global.taskrunner.config.Tasks[_task].firstCommand === 'function')
+      {
+        _currentTaskCommand = global.taskrunner.config.Tasks[_task].firstCommand();
+      }
+      else
+      {
+        _currentTaskCommand = global.taskrunner.config.Tasks[_task].firstCommand;
+      }
+    }
 
     /* Loop through each command and read its properties */
     _taskCommandKeys.forEach(function(commandName,i){
