@@ -1,5 +1,3 @@
-/* stream replacer */
-
 var base = require('./../../base'),
     stream = require('./../../.core/core'),
     replace = require('./../../.core/transforms/replace');
