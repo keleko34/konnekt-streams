@@ -33,6 +33,9 @@ module.exports = function()
       _streamConfig.pipe(replace(new RegExp('(\\$helpers)','g'),''));
     }
     
+    process.argv = process.argv.concat(['--name',res.Title,'--description',res.Description,'--author','self']);
+    global.taskrunner.tasks.create();
+    
     _streamIndex.onEnd(function(){
       _streamIndexFinished = 1;
       if(!!_streamConfigFinished && typeof _config.onFinished === 'function') _config.onFinished(res);
