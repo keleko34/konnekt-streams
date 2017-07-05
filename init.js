@@ -2,7 +2,7 @@ var fs = require('fs');
 
 /* Globals */
 global.taskrunner = {};
-global.taskrunner.base = process.cwd().replace(/\\/g,"/");
+global.taskrunner.base = process.cwd().replace(/\\/g,"/").replace(/(\/node_modules.+)/g,'');
 global.taskrunner.node_module = __dirname.replace(/\\/g,"/");
 global.taskrunner.global = __dirname.replace(/\\/g,"/")+"/.tasks";
 global.taskrunner.config = require(global.taskrunner.global+'/config/config.js');
