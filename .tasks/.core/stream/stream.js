@@ -9,7 +9,7 @@ module.exports = function(file,notFile,directory)
 {
   var _stream = {},
       _parse = (!notFile ? path.parse(file) : {}),
-      _root = process.cwd().replace(/\\/g,'/'),
+      _root = process.cwd().replace(/\\/g,'/').replace(/(\/node_modules.+)/g,''),
       _file = _parse.base,
       _ext = _parse.ext,
       _path = (!notFile ? file.replace(new RegExp('('+process.cwd()+')|('+_root+')','g'),'').replace(directory,'') : ''),

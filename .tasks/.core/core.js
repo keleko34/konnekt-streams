@@ -4,7 +4,7 @@ var fs = require('fs'),
 module.exports = function(src,notFile)
 {
   var _streams = [],
-      _root = process.cwd().replace(/\\/g,'/'),
+      _root = process.cwd().replace(/\\/g,'/').replace(/(\/node_modules.+)/g,''),
       _split = [],
       _isMultiFile = false,
       _isMultiDirectory = false,
