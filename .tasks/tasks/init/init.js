@@ -18,7 +18,7 @@ module.exports = function()
     _streamIndex.pipe(replace(new RegExp('(\\$title)','g'),res.Title));
     _streamIndex.pipe(replace(new RegExp('(\\$description)','g'),res.Description));
     
-    _streamConfig.pipe(replace(new RegExp('(\\$title)','g'),res.Title.toLowerCase().replace(/\s/g,'-')));
+    _streamConfig.pipe(replace(new RegExp('(\\$title)','g'),res.Title.toLowerCase().replace(/\s/g,'_')));
     _streamConfig.pipe(replace(new RegExp('(\\$description)','g'),res.Description));
     
     if(res.Helpers) 
@@ -36,7 +36,7 @@ module.exports = function()
     
     process.argv = process.argv.concat(['--name',res.Title,'--description',res.Description,'--author','<insert name>']);
     global.taskrunner.tasks.create(function(){
-      stream(global.taskrunner.base+'/components/'+res.Title.toLowerCase().replace(/\s/g,'-')+'/'+res.Title.toLowerCase().replace(/\s/g,'-')+'.html')
+      stream(global.taskrunner.base+'/components/'+res.Title.toLowerCase().replace(/\s/g,'_')+'/'+res.Title.toLowerCase().replace(/\s/g,'_')+'.html')
       .pipe(append('<h1>'+res.Title+'</h1>'))
       .write('/');
     });
