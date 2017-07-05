@@ -7,6 +7,7 @@ module.exports = function(cb)
   function Command(res)
   {
     console.log('\033[36mStarting to Create Component:\033[37m',res.Name);
+    res.Name = res.Name.toLowerCase().replace(/\s/g,'-');
     
     var _streams = stream(global.taskrunner.global+"/tasks/create/template/**/*"),
         _config = global.taskrunner.config.Tasks.create,
