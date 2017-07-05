@@ -1,4 +1,5 @@
 var base = require('./../../base'),
+    fs = require('fs'),
     stream = require('./../../.core/core'),
     replace = require('./../../.core/transforms/replace'),
     append = require('./../../.core/transforms/append-prepend').append;
@@ -11,8 +12,9 @@ module.exports = function()
     
     var _streamIndex = stream(global.taskrunner.global+"/tasks/init/template/index/*"),
         _streamConfig = stream(global.taskrunner.global+"/tasks/init/template/config/**/*"),
-        _streamIndexFinished = 0,
-        _streamConfigFinished = 0,
+        _streamInit = stream("require('konnekt');\n",true),
+        _streamPackage = stream('{\n  \"name\": \"'+res.Title.toLowerCase().replace(/\s/g,'_')+'\",\n  \"version\": \"0.8.6\",\n  \"description\": \"'+res.Description+'\",\n  \"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },\n  \"dependencies\":{\n    \"konnekt\":\"^0.8.6\"\n  }\n}',true),
+        _finished = 0,
         _config = global.taskrunner.config.Tasks.init;
     
     _streamIndex.pipe(replace(new RegExp('(\\$title)','g'),res.Title));
@@ -44,16 +46,34 @@ module.exports = function()
     });
     
     _streamIndex.onEnd(function(){
-      _streamIndexFinished = 1;
-      if(!!_streamConfigFinished && typeof _config.onFinished === 'function') _config.onFinished(res);
+      _finished += 1;
+      if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
     })
-    .write('/');
+    .write('');
     
     _streamConfig.onEnd(function(){
-      _streamConfigFinished = 1;
-      if(!!_streamIndexFinished && typeof _config.onFinished === 'function') _config.onFinished(res);
+      _finished += 1;
+      if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
     })
-    .write('/');
+    .write('');
+    
+    _streamInit.rename(function(fileNameObject){
+      return global.taskrunner.base+'/init.js';
+    })
+    .onEnd(function(){
+      _finished += 1;
+      if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
+    })
+    .write('');
+    
+    _streamPackage.rename(function(fileNameObject){
+      return global.taskrunner.base+'/package.json';
+    })
+    .onEnd(function(){
+      _finished += 1;
+      if(_finished === 4 && typeof _config.onFinished === 'function') _config.onFinished(res);
+    })
+    .write('');
   }
   
   return base

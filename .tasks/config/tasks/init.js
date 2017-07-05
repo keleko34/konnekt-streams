@@ -1,6 +1,21 @@
 module.exports = {
   firstCommand:'Title',
   commands:{
+    Initial:{
+      cmd:{
+        short:'-i',
+        long:'--init'
+      },
+      prompt:{
+        type:'confirm',
+        message:'Would You like to go ahead and set up a brand new project from this install?'
+      },
+      action:function(v,values)
+      {
+        if(v) return 'Title';
+        return 'exit';
+      }
+    },
     Title:{
       cmd:{
           short:'-t',
