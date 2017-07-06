@@ -15,7 +15,7 @@ module.exports = {
       action:function(v,values)
       {
         if(v) return 'Title';
-        return 'exit';
+        return 'end';
       }
     },
     Title:{
