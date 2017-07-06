@@ -69,7 +69,7 @@ module.exports = function()
     
     if(!fs.existsSync(global.taskrunner.base+'/package.json'))
     {
-      var _streamPackage = stream('{\n  \"name\": \"'+res.Title.toLowerCase().replace(/\s/g,'_')+'\",\n  \"version\": \"0.8.6\",\n  \"description\": \"'+res.Description+'\",\n  \"main\": \"init.js\",\n  \"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },\n  \"dependencies\":{\n    \"konnekt\":\"^'+latest_konnekt_version+'\"\n  }\n}',true);
+      var _streamPackage = stream('{\n  \"name\": \"'+res.Title.toLowerCase().replace(/\s/g,'_')+'\",\n  \"version\": \"0.0.1\",\n  \"description\": \"'+res.Description+'\",\n  \"main\": \"init.js\",\n  \"scripts\": {\n    \"init\":\"node init --task init\",\n    \"create\":\"node init --task create\",\n    \"build\":\"node init --task build\",\n    \"server\":\"node init --task server\",\n    \"group\":\"node init --task group\"\n  },\n  \"dependencies\":{\n    \"konnekt\":\"^'+latest_konnekt_version+'\"\n  }\n}',true);
       
         _streamPackage.rename(function(fileNameObject){
           return '/package.json';
