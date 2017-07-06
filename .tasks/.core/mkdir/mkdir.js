@@ -19,7 +19,7 @@ module.exports = function(dir,cb)
   
   mkdir.create = function(dir,cb)
   {
-    var _localPath = process.cwd().replace(/\\/g,'/'),
+    var _localPath = process.cwd().replace(/\\/g,'/').replace(/(\/node_modules.+)/g,''),
         _path = path.parse(dir).dir.replace(_localPath,''),
         _split = _path.split('/'),
         _current = 0;
