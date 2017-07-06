@@ -21,7 +21,7 @@ module.exports = function(dir,cb)
   {
     var _localPath = process.cwd().replace(/\\/g,'/').replace(/(\/node_modules.+)/g,''),
         _path = path.parse(dir).dir.replace(_localPath,''),
-        _split = _path.split('/'),
+        _split = _path.split('/').filter(function(v){return (v !== undefined && v.length !== 0)}),
         _current = 0;
     
     function next()
