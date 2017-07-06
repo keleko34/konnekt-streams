@@ -1,5 +1,6 @@
 var fs = require('fs'),
-    path = require('path');
+    path = require('path'),
+    pathWaitList = {};
 
 module.exports = function(dir,cb)
 {

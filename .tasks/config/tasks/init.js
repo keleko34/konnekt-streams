@@ -1,6 +1,6 @@
 module.exports = {
   firstCommand:function(){
-    return (process.argv.indexOf('--postinstall') !== -1 ? 'Initial' : 'Title');
+    return ((process.argv.indexOf('--postinstall') !== -1 && process.argv.indexOf('--skippostinstall') === -1 )? 'Initial' : 'Title');
   },
   commands:{
     Initial:{
