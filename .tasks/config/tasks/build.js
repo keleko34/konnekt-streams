@@ -51,7 +51,7 @@ module.exports = {
         message:'Would you like to build from latest dev or previous channel?',
         choices:function(values){
           var channels = ['qa','stage','prod'];
-          return ['dev'].concat(channels[(channels.indexOf(values.Channel)-1)]);
+          return (channels !== 'qa' ? ['dev'].concat(channels[(channels.indexOf(values.Channel)-1)]) : ['dev']);
         }
       },
       action:'end'

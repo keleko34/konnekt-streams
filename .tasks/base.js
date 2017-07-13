@@ -71,6 +71,7 @@ module.exports = (function(){
         runCommand(_currentTaskCommand,_taskCommands[_currentTaskCommand]);
       }
       else{
+        res = _values[_currentTaskCommand];
         toCommand(_currentTaskCommand,(typeof _taskCommands[_currentTaskCommand].action === 'function' ? _taskCommands[_currentTaskCommand].action(res,_values) : _taskCommands[_currentTaskCommand].action),res);
       }
     }
