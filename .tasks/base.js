@@ -8,7 +8,10 @@ var cli = require('commander').version('0.0.1'),
     inquirer = require('inquirer');
 
 module.exports = (function(){
-  /* These are the private variables [l(* u *)l] *Kirby* */
+  /*                                   	/\_/\
+   * These are the private variables   (* u *) *mr owl* 
+   *                                   (( V ))
+   */
   var _filter = function(){},
       _task = '',
       _taskCommands = {},

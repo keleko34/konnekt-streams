@@ -20,11 +20,11 @@
   },
   "homepage": "https://github.com/keleko34/konnekt-streams#readme",
   "dependencies": {
-    "commander": "^2.10.0",
-    "connect": "^3.6.2",
-    "google-closure-compiler-js": "^20170521.0.0",
-    "inquirer": "^3.1.1",
+    "commander": "2.10.0",
+    "connect": "3.6.2",
+    "google-closure-compiler-js": "20170521.0.0",
+    "inquirer": "3.1.1",
     "open": "0.0.5",
-    "serve-static": "^1.12.3"
+    "serve-static": "1.12.3"
   }
 }
